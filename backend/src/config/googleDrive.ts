@@ -38,3 +38,16 @@ export const uploadToDrive = async (file: Express.Multer.File) => {
 
     return response.data;
 };
+
+export const deleteFromDrive = async (fileId: string) => {
+  if (!fileId) throw new Error("File ID is required for deletion");
+
+  try {
+    await driveService.files.delete({
+      fileId,
+    });
+  } catch (error) {
+    console.error("Failed to delete file from Drive:", error);
+    throw error;
+  }
+};
