@@ -7,7 +7,7 @@ const router = Router();
 const upload = multer({ storage: multer.memoryStorage() });
 
 router.post(
-    "/gallery",
+    "/",
     upload.single("image"),
     (req: Request, res: Response, next: NextFunction) => {
         const { error } = uploadImageSchema.validate(req.body);
@@ -19,8 +19,8 @@ router.post(
     uploadImage
 );
 
-router.get("/gallery", getGallery);
+router.get("/", getGallery);
 
-router.get("/gallery/one-per-category", getGalleryOnePerCategory);
+router.get("/one-per-category", getGalleryOnePerCategory);
 
 export default router;
