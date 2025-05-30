@@ -23,6 +23,6 @@ router.get("/", getGallery);
 
 router.get("/one-per-category", getGalleryOnePerCategory);
 
-router.delete("/:id", deleteImage);
+router.delete("/delete/:id", deleteImage);
 
 export default router;

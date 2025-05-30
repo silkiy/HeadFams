@@ -64,9 +64,6 @@ export const getGallery = async (req: Request, res: Response) => {
             id: doc.id,
             ...doc.data()
         }));
-        if (data.length === 0) {
-            return res.status(404).json({ message: "No images found" });
-        }
 
         const snapshotCount = await db.collection("gallery").count().get();
         const totalCount = snapshotCount.data().count;

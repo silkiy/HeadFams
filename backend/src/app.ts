@@ -11,12 +11,16 @@ app.use(express.json());
 app.use("/api", router);
 
 app.use((req: Request, res: Response) => {
-  res.json({
+  res.status(404).json({
     message: "NOT FOUND",
-    code: 401,
+    code: 404,
   });
 });
 
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
-});
+if (process.env.NODE_ENV !== "production") {
+  app.listen(PORT, () => {
+    console.log(`Server running on http://localhost:${PORT}`);
+  });
+}
+
+export default app;
