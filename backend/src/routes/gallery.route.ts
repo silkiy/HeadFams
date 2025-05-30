@@ -1,6 +1,6 @@
 import { Router } from "express";
 import multer from "multer";
-import { getGallery, getGalleryOnePerCategory, uploadImage, uploadImageSchema } from "../controllers/gallery.controller";
+import { getGallery, getGalleryOnePerCategory, uploadImage, uploadImageSchema, deleteImage } from "../controllers/gallery.controller";
 import { Request, Response, NextFunction } from "express";
 
 const router = Router();
@@ -22,5 +22,7 @@ router.post(
 router.get("/", getGallery);
 
 router.get("/one-per-category", getGalleryOnePerCategory);
+
+router.delete("/:id", deleteImage);
 
 export default router;
