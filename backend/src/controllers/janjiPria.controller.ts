@@ -11,6 +11,11 @@ export const vCreateJanjiPria = Joi.object({
     }),
 });
 
+export const vUpdateJanjiPria = Joi.object({
+    description: Joi.string().min(3).max(5000),
+    status: Joi.string().valid("pending", "approve", "rejected"),
+});
+
 export const createJanjiPria = async (req: Request, res: Response) => {
     try {
         const { description } = req.body;
@@ -114,5 +119,52 @@ export const getAllJanjiPria = async (_req: Request, res: Response) => {
     } catch (error) {
         console.error("Fetch Error:", error);
         res.status(500).json({ error: "Gagal mengambil semua Janji Pria" });
+    }
+};
+
+export const updateJanjiPria = async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const { description, status } = req.body;
+
+    if (!id) {
+        return res.status(400).json({ error: "ID janjiPria wajib disertakan" });
+    }
+
+    if (!description && !status) {
+        return res.status(400).json({ error: "Setidaknya satu field harus diubah" });
+    }
+
+    const updateData: any = {};
+    if (description) {
+        updateData.description = description;
+    }
+    if (status) {
+        const validStatuses = ["pending", "approve", "rejected"];
+        if (!validStatuses.includes(status)) {
+            return res.status(400).json({ error: "Status tidak valid" });
+        }
+        updateData.status = status;
+    }
+
+    updateData.updatedAt = Timestamp.now();
+
+    try {
+        const docRef = db.collection("janjiPria").doc(id);
+        const docSnap = await docRef.get();
+
+        if (!docSnap.exists) {
+            return res.status(404).json({ error: "Data janjiPria tidak ditemukan" });
+        }
+
+        await docRef.update(updateData);
+
+        res.status(200).json({
+            success: true,
+            message: "Janji Pria berhasil diperbarui",
+            updatedFields: updateData,
+        });
+    } catch (error) {
+        console.error("Update Error:", error);
+        res.status(500).json({ error: "Gagal memperbarui Janji Pria" });
     }
 };
