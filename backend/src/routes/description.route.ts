@@ -1,7 +1,9 @@
 import express from "express";
 import {
     createDescription,
-    vCreateDescription
+    vCreateDescription,
+    getApprovedDescriptions,
+    getAllDescriptions,
 } from "../controllers/description.controller";
 import { authenticateAdmin } from "../middleware/auth.middleware";
 
@@ -18,6 +20,16 @@ router.post(
         next();
     },
     createDescription
+);
+
+router.get(
+    "/approved",
+    getApprovedDescriptions
+);
+
+router.get(
+    "/",
+    getAllDescriptions
 );
 
 export default router;
