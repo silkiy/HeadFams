@@ -3,7 +3,7 @@ import { db } from "../config/firebase";
 import { Timestamp } from "firebase-admin/firestore";
 import Joi from "joi";
 
-export const vCreateDescription = Joi.object({
+export const vCreateJanjiPria = Joi.object({
     description: Joi.string().min(3).max(5000).required().messages({
         "string.empty": "Description wajib diisi",
         "string.min": "Description minimal 3 karakter",
@@ -11,14 +11,14 @@ export const vCreateDescription = Joi.object({
     }),
 });
 
-export const createDescription = async (req: Request, res: Response) => {
+export const createJanjiPria = async (req: Request, res: Response) => {
     try {
         const { description } = req.body;
         if (!description) return res.status(400).json({ error: "Description wajib diisi" });
 
         const now = Timestamp.now();
 
-        const docRef = await db.collection("descriptions").add({
+        const docRef = await db.collection("janjiPria").add({
             description,
             status: "pending",
             createdAt: now,
@@ -28,18 +28,18 @@ export const createDescription = async (req: Request, res: Response) => {
         res.status(201).json({
             success: true, id:
                 docRef.id, message:
-                "Deskripsi berhasil dibuat",
+                "Janji Pria berhasil dibuat",
         });
     } catch (error) {
         console.error("Create Error:", error);
-        res.status(500).json({ error: "Gagal membuat deskripsi" });
+        res.status(500).json({ error: "Gagal membuat Janji Pria" });
     }
 };
 
-export const getApprovedDescriptions = async (_req: Request, res: Response) => {
+export const getApprovedJanjiPria = async (_req: Request, res: Response) => {
     try {
         const snapshot = await db
-            .collection("descriptions")
+            .collection("janjiPria")
             .where("status", "==", "approve")
             .orderBy("createdAt", "desc")
             .get();
@@ -73,14 +73,14 @@ export const getApprovedDescriptions = async (_req: Request, res: Response) => {
         });
     } catch (error) {
         console.error("Fetch Error:", error);
-        res.status(500).json({ error: "Gagal mengambil deskripsi yang disetujui" });
+        res.status(500).json({ error: "Gagal mengambil Janji Pria yang disetujui" });
     }
 };
 
-export const getAllDescriptions = async (_req: Request, res: Response) => {
+export const getAllJanjiPria = async (_req: Request, res: Response) => {
     try {
         const snapshot = await db
-            .collection("descriptions")
+            .collection("janjiPria")
             .orderBy("createdAt", "desc")
             .get();
 
@@ -113,6 +113,6 @@ export const getAllDescriptions = async (_req: Request, res: Response) => {
         });
     } catch (error) {
         console.error("Fetch Error:", error);
-        res.status(500).json({ error: "Gagal mengambil semua deskripsi" });
+        res.status(500).json({ error: "Gagal mengambil semua Janji Pria" });
     }
 };
