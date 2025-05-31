@@ -1,8 +1,6 @@
 import express, { Request, Response } from "express";
 import dotenv from "dotenv";
 import router from "./routes/index.route";
-import { createServer } from "http";
-import { parse } from "url";
 
 dotenv.config();
 
@@ -11,6 +9,10 @@ const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 app.use("/api", router);
+
+app.get("/", (req: Request, res: Response) => {
+  res.json({ message: "HeadFams backend is running" });
+});
 
 app.use((req: Request, res: Response) => {
   res.status(404).json({
@@ -25,13 +27,4 @@ if (process.env.NODE_ENV !== "production") {
   });
 }
 
-export default async function handler(req: any, res: any) {
-  const parsedUrl = parse(req.url!, true);
-  req.query = parsedUrl.query;
-
-  const server = createServer((req, res) => {
-    app(req as any, res as any);
-  });
-
-  server.emit("request", req, res);
-}
+module.exports = app;
