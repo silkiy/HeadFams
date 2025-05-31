@@ -130,3 +130,4 @@ dist
 .pnp.*
 
 service-account.json
+/backend/src/createAdmin.ts
