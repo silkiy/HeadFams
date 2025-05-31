@@ -38,3 +38,28 @@ export const authenticateAdmin = (req: Request, res: Response, next: NextFunctio
         return res.status(401).json({ error: "Invalid token" });
     }
 };
+
+export const authenticateSecret = (req: Request, res: Response, next: NextFunction) => {
+    const authHeader = req.headers.authorization;
+
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+        return res.status(401).json({
+            message: "You do not have permission to access this section.",
+            success: false,
+            code: 101,
+        });
+    }
+
+    const token = authHeader.split(" ")[1];
+
+    try {
+        const decoded = jwt.verify(token, JWT_SECRET) as JwtPayload;
+        if (decoded.role !== "secret") {
+            return res.status(403).json({ error: "Forbidden: not authorized for secret area" });
+        }
+        (req as any).secret = decoded;
+        next();
+    } catch {
+        return res.status(401).json({ error: "Invalid token" });
+    }
+};
