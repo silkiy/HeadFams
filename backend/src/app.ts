@@ -5,6 +5,7 @@ import router from "./routes/index.route";
 dotenv.config();
 
 const app = express();
+const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 app.use("/api", router);
@@ -21,10 +22,9 @@ app.use((req: Request, res: Response) => {
 });
 
 if (process.env.NODE_ENV !== "production") {
-  const PORT = process.env.PORT || 3000;
   app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
   });
 }
 
-module.exports = app;
+export default app;
