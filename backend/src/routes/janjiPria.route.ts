@@ -7,7 +7,10 @@ import {
     vUpdateJanjiPria,
     updateJanjiPria
 } from "../controllers/janjiPria.controller";
-import { authenticateAdmin } from "../middleware/auth.middleware";
+import { 
+    authenticateAdmin, 
+    authenticateSecret 
+} from "../middleware/auth.middleware";
 
 const router = express.Router();
 
@@ -31,6 +34,7 @@ router.get(
 
 router.get(
     "/",
+    authenticateSecret,
     getAllJanjiPria
 );
 
