@@ -1,6 +1,8 @@
 import express, { Request, Response } from "express";
 import dotenv from "dotenv";
 import router from "./routes/index.route";
+import { createServer } from "http";
+import { parse } from "url";
 
 dotenv.config();
 
@@ -23,4 +25,13 @@ if (process.env.NODE_ENV !== "production") {
   });
 }
 
-export default app;
+export default async function handler(req: any, res: any) {
+  const parsedUrl = parse(req.url!, true);
+  req.query = parsedUrl.query;
+
+  const server = createServer((req, res) => {
+    app(req as any, res as any);
+  });
+
+  server.emit("request", req, res);
+}
