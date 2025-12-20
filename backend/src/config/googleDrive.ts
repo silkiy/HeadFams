@@ -51,9 +51,10 @@ export const uploadToDrive = async (file: Express.Multer.File) => {
   const directLink = `https://drive.google.com/thumbnail?id=${response.data.id}&sz=s3000`;
 
   return {
-    ...response.data,
-    webViewLink: directLink, // Override webViewLink with direct link for compatibility
-    directLink: directLink
+    id: response.data.id!,
+    name: response.data.name || "Untitled",
+    webViewLink: directLink,
+    webContentLink: response.data.webContentLink || "",
   };
 };
 
