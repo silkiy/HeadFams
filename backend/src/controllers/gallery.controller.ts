@@ -65,7 +65,7 @@ export const getGallery = async (req: Request, res: Response) => {
             return {
                 id: doc.id,
                 ...docData,
-                url: docData.driveId ? `https://drive.google.com/uc?export=view&id=${docData.driveId}` : docData.url
+                url: docData.driveId ? `https://drive.google.com/thumbnail?id=${docData.driveId}&sz=s3000` : docData.url
             };
         });
 
@@ -96,7 +96,7 @@ export const getGalleryOnePerCategory = async (_req: Request, res: Response) => 
                 mapCategoryToDoc[category] = {
                     id: doc.id,
                     ...data,
-                    url: data.driveId ? `https://drive.google.com/uc?export=view&id=${data.driveId}` : data.url
+                    url: data.driveId ? `https://drive.google.com/thumbnail?id=${data.driveId}&sz=s3000` : data.url
                 };
             }
         });

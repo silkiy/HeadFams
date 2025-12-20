@@ -48,7 +48,7 @@ export const uploadToDrive = async (file: Express.Multer.File) => {
   // Construct a direct link (using 'uc' endpoint for direct view)
   // webViewLink is the preview page, webContentLink is for download (often with prompts).
   // The most reliable for img tags is often https://drive.google.com/uc?export=view&id=FILE_ID
-  const directLink = `https://drive.google.com/uc?export=view&id=${response.data.id}`;
+  const directLink = `https://drive.google.com/thumbnail?id=${response.data.id}&sz=s3000`;
 
   return {
     ...response.data,
