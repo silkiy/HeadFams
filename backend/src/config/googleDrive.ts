@@ -8,35 +8,53 @@ dotenv.config();
 const KEYFILEPATH = path.join(__dirname, "../../service-account.json");
 
 const auth = new google.auth.GoogleAuth({
-    keyFile: KEYFILEPATH,
-    scopes: ["https://www.googleapis.com/auth/drive.file"],
+  keyFile: KEYFILEPATH,
+  scopes: ["https://www.googleapis.com/auth/drive.file"],
 });
 
 const driveService = google.drive({ version: "v3", auth });
 
 export const uploadToDrive = async (file: Express.Multer.File) => {
-    const folderId = process.env.GOOGLE_DRIVE_FOLDER_ID;
-    if (!folderId) throw new Error("Missing GOOGLE_DRIVE_FOLDER_ID in .env");
+  const folderId = process.env.GOOGLE_DRIVE_FOLDER_ID;
+  if (!folderId) throw new Error("Missing GOOGLE_DRIVE_FOLDER_ID in .env");
 
-    const fileMetadata = {
-        name: file.originalname,
-        parents: [folderId],
-    };
+  const fileMetadata = {
+    name: file.originalname,
+    parents: [folderId],
+  };
 
-    const media = {
-        mimeType: file.mimetype,
-        body: Readable.from(file.buffer),
-    };
+  const media = {
+    mimeType: file.mimetype,
+    body: Readable.from(file.buffer),
+  };
 
-    const response = await driveService.files.create({
-        requestBody: fileMetadata,
-        media,
-        fields: "id, name, webViewLink",
-    });
+  const response = await driveService.files.create({
+    requestBody: fileMetadata,
+    media,
+    fields: "id, name, webViewLink, webContentLink",
+  });
 
-    if (!response.data) throw new Error("Upload failed, no response data");
+  if (!response.data || !response.data.id) throw new Error("Upload failed, no response data");
 
-    return response.data;
+  // Make the file public
+  await driveService.permissions.create({
+    fileId: response.data.id,
+    requestBody: {
+      role: "reader",
+      type: "anyone",
+    },
+  });
+
+  // Construct a direct link (using 'uc' endpoint for direct view)
+  // webViewLink is the preview page, webContentLink is for download (often with prompts).
+  // The most reliable for img tags is often https://drive.google.com/uc?export=view&id=FILE_ID
+  const directLink = `https://drive.google.com/uc?export=view&id=${response.data.id}`;
+
+  return {
+    ...response.data,
+    webViewLink: directLink, // Override webViewLink with direct link for compatibility
+    directLink: directLink
+  };
 };
 
 export const deleteFromDrive = async (fileId: string) => {
