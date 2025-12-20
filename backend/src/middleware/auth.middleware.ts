@@ -63,3 +63,32 @@ export const authenticateSecret = (req: Request, res: Response, next: NextFuncti
         return res.status(401).json({ error: "Invalid token" });
     }
 };
+
+export const authenticateAdminOrSecret = (req: Request, res: Response, next: NextFunction) => {
+    const authHeader = req.headers.authorization;
+
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+        return res.status(401).json({
+            message: "You do not have permission to access this section.",
+            success: false,
+            code: 101,
+        });
+    }
+
+    const token = authHeader.split(" ")[1];
+
+    try {
+        const decoded = jwt.verify(token, JWT_SECRET!) as JwtPayload;
+        if (decoded.role === "admin") {
+            (req as any).admin = decoded;
+            return next();
+        }
+        if (decoded.role === "secret") {
+            (req as any).secret = decoded;
+            return next();
+        }
+        return res.status(403).json({ error: "Forbidden: role not authorized" });
+    } catch {
+        return res.status(401).json({ error: "Invalid token" });
+    }
+};
