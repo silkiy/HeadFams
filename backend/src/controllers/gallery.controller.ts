@@ -60,10 +60,14 @@ export const getGallery = async (req: Request, res: Response) => {
         }
 
         const snapshot = await query.get();
-        const data = snapshot.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data()
-        }));
+        const data = snapshot.docs.map(doc => {
+            const docData = doc.data();
+            return {
+                id: doc.id,
+                ...docData,
+                url: docData.driveId ? `https://drive.google.com/uc?export=view&id=${docData.driveId}` : docData.url
+            };
+        });
 
         const snapshotCount = await db.collection("gallery").count().get();
         const totalCount = snapshotCount.data().count;
@@ -91,7 +95,8 @@ export const getGalleryOnePerCategory = async (_req: Request, res: Response) => 
             if (category && !mapCategoryToDoc[category]) {
                 mapCategoryToDoc[category] = {
                     id: doc.id,
-                    ...data
+                    ...data,
+                    url: data.driveId ? `https://drive.google.com/uc?export=view&id=${data.driveId}` : data.url
                 };
             }
         });
