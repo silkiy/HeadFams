@@ -90,24 +90,22 @@ export default function GalleryPage() {
           No images found.
         </div>
       ) : (
-        <div className="columns-1 md:columns-3 lg:columns-4 gap-4 space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {images.map((image) => (
-            <div key={image.id} className="break-inside-avoid">
-              <Card className="overflow-hidden">
-                <div className="aspect-square relative">
-                    <img 
-                    src={image.url} 
-                    alt={image.name} 
-                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                    loading="lazy"
-                    referrerPolicy="no-referrer"
-                    />
-                </div>
-                <CardContent className="p-3">
-                  <p className="text-sm font-medium text-muted-foreground">{image.category}</p>
-                </CardContent>
-              </Card>
-            </div>
+            <Card key={image.id} className="overflow-hidden group h-full">
+              <div className="aspect-square relative">
+                  <img 
+                  src={image.url} 
+                  alt={image.name} 
+                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                  loading="lazy"
+                  referrerPolicy="no-referrer"
+                  />
+              </div>
+              <CardContent className="p-3">
+                <p className="text-sm font-medium text-muted-foreground truncate">{image.category}</p>
+              </CardContent>
+            </Card>
           ))}
         </div>
       )}
