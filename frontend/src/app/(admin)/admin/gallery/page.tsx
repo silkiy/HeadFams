@@ -198,11 +198,11 @@ export default function GalleryManagementPage() {
       <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {images.map((image) => (
           <Card key={image.id} className="overflow-hidden group relative">
-            <div className="aspect-square relative">
+            <div className="group relative aspect-video overflow-hidden rounded-md">
               <img 
                 src={image.url} 
                 alt={image.name} 
-                className="w-full h-full object-cover transition-transform group-hover:scale-105" 
+                className="w-full h-full object-cover hover:scale-105 transition-transform duration-300" 
                 loading="lazy"
                 referrerPolicy="no-referrer"
               />
