@@ -5,10 +5,11 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const KEYFILEPATH = path.join(__dirname, "../../service-account.json");
-
 const auth = new google.auth.GoogleAuth({
-  keyFile: KEYFILEPATH,
+  credentials: {
+    client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
+    private_key: process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, "\n"),
+  },
   scopes: ["https://www.googleapis.com/auth/drive.file"],
 });
 
