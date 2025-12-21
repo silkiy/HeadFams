@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface JanjiPria {
   id: string;
@@ -36,7 +37,7 @@ interface JanjiPria {
 export default function JanjiPriaPage() {
   const [data, setData] = useState<JanjiPria[]>([]);
   const [loading, setLoading] = useState(true);
-  
+
   // Create State
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [newDescription, setNewDescription] = useState("");
@@ -83,20 +84,20 @@ export default function JanjiPriaPage() {
 
     setIsCreating(true);
     try {
-        await api.post("/janji-pria", { description: newDescription });
-        toast.success("Success", {
-            description: "Janji Pria created successfully",
-        });
-        setIsCreateOpen(false);
-        setNewDescription("");
-        fetchData();
+      await api.post("/janji-pria", { description: newDescription });
+      toast.success("Success", {
+        description: "Janji Pria created successfully",
+      });
+      setIsCreateOpen(false);
+      setNewDescription("");
+      fetchData();
     } catch (error: any) {
-        console.error("Create failed", error);
-        toast.error("Error", {
-            description: error.response?.data?.error || "Failed to create Janji Pria",
-        });
+      console.error("Create failed", error);
+      toast.error("Error", {
+        description: error.response?.data?.error || "Failed to create Janji Pria",
+      });
     } finally {
-        setIsCreating(false);
+      setIsCreating(false);
     }
   };
 
@@ -105,45 +106,46 @@ export default function JanjiPriaPage() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-6 w-full max-w-full overflow-x-hidden">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <h1 className="text-3xl font-bold tracking-tight">Janji Pria Management</h1>
         <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-            <DialogTrigger asChild>
-                <Button>
-                    <Plus className="mr-2 h-4 w-4" /> Create New
+          <DialogTrigger asChild>
+            <Button>
+              <Plus className="mr-2 h-4 w-4" /> Create New
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Create Janji Pria</DialogTitle>
+              <DialogDescription>
+                Add a new promise to the list.
+              </DialogDescription>
+            </DialogHeader>
+            <form onSubmit={handleCreate} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="description">Description</Label>
+                <Textarea
+                  id="description"
+                  value={newDescription}
+                  onChange={(e) => setNewDescription(e.target.value)}
+                  placeholder="Enter the promise description..."
+                  required
+                />
+              </div>
+              <DialogFooter>
+                <Button type="submit" disabled={isCreating}>
+                  {isCreating && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  Create
                 </Button>
-            </DialogTrigger>
-            <DialogContent>
-                <DialogHeader>
-                    <DialogTitle>Create Janji Pria</DialogTitle>
-                    <DialogDescription>
-                        Add a new promise to the list.
-                    </DialogDescription>
-                </DialogHeader>
-                <form onSubmit={handleCreate} className="space-y-4">
-                    <div className="space-y-2">
-                        <Label htmlFor="description">Description</Label>
-                        <Textarea
-                            id="description"
-                            value={newDescription}
-                            onChange={(e) => setNewDescription(e.target.value)}
-                            placeholder="Enter the promise description..."
-                            required
-                        />
-                    </div>
-                    <DialogFooter>
-                        <Button type="submit" disabled={isCreating}>
-                            {isCreating && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                            Create
-                        </Button>
-                    </DialogFooter>
-                </form>
-            </DialogContent>
+              </DialogFooter>
+            </form>
+          </DialogContent>
         </Dialog>
       </div>
 
-      <div className="rounded-md border bg-card">
+      {/* Desktop Table View */}
+      <div className="hidden md:block rounded-md border bg-card overflow-x-auto">
         <Table>
           <TableHeader>
             <TableRow>
@@ -168,8 +170,8 @@ export default function JanjiPriaPage() {
                   </TableCell>
                   <TableCell>
                     <Badge variant={
-                      item.status === "approve" ? "default" : 
-                      item.status === "rejected" ? "destructive" : "secondary"
+                      item.status === "approve" ? "default" :
+                        item.status === "rejected" ? "destructive" : "secondary"
                     }>
                       {item.status}
                     </Badge>
@@ -192,6 +194,46 @@ export default function JanjiPriaPage() {
             )}
           </TableBody>
         </Table>
+      </div>
+
+      {/* Mobile Card View */}
+      <div className="md:hidden grid gap-4 w-full">
+        {data.length === 0 ? (
+          <div className="text-center p-8 text-muted-foreground border rounded-md">
+            No data found.
+          </div>
+        ) : (
+          data.map((item) => (
+            <Card key={item.id} className="w-full">
+              <CardHeader className="pb-2">
+                <div className="flex justify-between items-start gap-4">
+                  <div className="min-w-0 flex-1">
+                    <CardTitle className="text-base font-normal leading-relaxed break-all whitespace-normal">
+                      {item.description}
+                    </CardTitle>
+                  </div>
+                  <Badge variant={
+                    item.status === "approve" ? "default" :
+                      item.status === "rejected" ? "destructive" : "secondary"
+                  } className="shrink-0">
+                    {item.status}
+                  </Badge>
+                </div>
+                <p className="text-xs text-muted-foreground mt-1">{item.createdAt}</p>
+              </CardHeader>
+              {item.status === "pending" && (
+                <CardContent className="flex gap-2 pt-0">
+                  <Button size="sm" variant="outline" className="flex-1 text-green-600 border-green-600 hover:bg-green-50" onClick={() => handleStatusUpdate(item.id, "approve")}>
+                    <CheckCircle className="h-4 w-4 mr-1" /> Approve
+                  </Button>
+                  <Button size="sm" variant="outline" className="flex-1 text-red-600 border-red-600 hover:bg-red-50" onClick={() => handleStatusUpdate(item.id, "rejected")}>
+                    <XCircle className="h-4 w-4 mr-1" /> Reject
+                  </Button>
+                </CardContent>
+              )}
+            </Card>
+          ))
+        )}
       </div>
     </div>
   );
