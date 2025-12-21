@@ -35,9 +35,18 @@ export default function GalleryManagementPage() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [categoryName, setCategoryName] = useState("");
 
-  const fetchImages = async () => {
+  /* State for Filters */
+  const [categories, setCategories] = useState<string[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState("All");
+
+  const fetchImages = async (category?: string) => {
+    setLoading(true);
     try {
-      const response = await api.get("/gallery?limit=50");
+      const url = category && category !== "All" 
+        ? `/gallery?limit=50&category=${encodeURIComponent(category)}`
+        : "/gallery?limit=50";
+
+      const response = await api.get(url);
       if (response.data.success) {
         setImages(response.data.data);
       }
@@ -51,10 +60,25 @@ export default function GalleryManagementPage() {
     }
   };
 
+  const fetchCategories = async () => {
+    try {
+      const response = await api.get("/gallery/one-per-category");
+      if (Array.isArray(response.data)) {
+        const uniqueCategories = Array.from(new Set(response.data.map((img: any) => img.category)));
+        setCategories(["All", ...uniqueCategories as string[]]);
+      }
+    } catch (error) {
+      console.error("Failed to fetch categories", error);
+      setCategories(["All"]);
+    }
+  };
+
   useEffect(() => {
     fetchImages();
+    fetchCategories();
   }, []);
 
+  /* Update handleUpload to refresh categories too */
   const handleUpload = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedFile || !categoryName) return;
@@ -76,7 +100,8 @@ export default function GalleryManagementPage() {
       setIsOpen(false);
       setSelectedFile(null);
       setCategoryName("");
-      fetchImages();
+      fetchImages(selectedCategory); // Refresh current view
+      fetchCategories(); // Refresh categories list
     } catch (error: any) {
       console.error("Upload failed", error);
       toast.error("Upload Failed", {
@@ -95,7 +120,8 @@ export default function GalleryManagementPage() {
       toast.success("Success", {
         description: "Image deleted",
       });
-      fetchImages();
+      fetchImages(selectedCategory);
+      // Ideally check if category empty now but acceptable to leave for now
     } catch (error) {
       console.error("Delete failed", error);
       toast.error("Error", {
@@ -104,66 +130,75 @@ export default function GalleryManagementPage() {
     }
   };
 
-  if (loading) return <div className="flex justify-center p-8"><Loader2 className="animate-spin" /></div>;
+  if (loading && images.length === 0) return <div className="flex justify-center p-8"><Loader2 className="animate-spin" /></div>;
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <h1 className="text-3xl font-bold tracking-tight">Gallery Management</h1>
-        <Dialog open={isOpen} onOpenChange={setIsOpen}>
-          <DialogTrigger asChild>
-            <Button>
-              <Plus className="mr-2 h-4 w-4" /> Add Image
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Upload Image</DialogTitle>
-              <DialogDescription>
-                Upload a new image to the gallery.
-              </DialogDescription>
-            </DialogHeader>
-            <form onSubmit={handleUpload} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="category">Category Name</Label>
-                <Input 
-                  id="category" 
-                  value={categoryName} 
-                  onChange={(e) => setCategoryName(e.target.value)} 
-                  placeholder="e.g. Wedding, Event" 
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="image">Image File</Label>
-                <Input 
-                  id="image" 
-                  type="file" 
-                  accept="image/*"
-                  onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
-                  required
-                />
-              </div>
-              <DialogFooter>
-                <Button type="submit" disabled={isUploading}>
-                  {isUploading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  Upload
+        <div className="flex items-center gap-2">
+           {/* Simple Category Filter Dropdown or Buttons */}
+           <select 
+              className="h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              value={selectedCategory}
+              onChange={(e) => {
+                setSelectedCategory(e.target.value);
+                fetchImages(e.target.value);
+              }}
+           >
+              {categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
+           </select>
+
+            <Dialog open={isOpen} onOpenChange={setIsOpen}>
+              <DialogTrigger asChild>
+                <Button>
+                  <Plus className="mr-2 h-4 w-4" /> Add Image
                 </Button>
-              </DialogFooter>
-            </form>
-          </DialogContent>
-        </Dialog>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Upload Image</DialogTitle>
+                  <DialogDescription>
+                    Upload a new image to the gallery.
+                  </DialogDescription>
+                </DialogHeader>
+                <form onSubmit={handleUpload} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="category">Category Name</Label>
+                    <Input 
+                      id="category" 
+                      value={categoryName} 
+                      onChange={(e) => setCategoryName(e.target.value)} 
+                      placeholder="e.g. Wedding, Event" 
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="image">Image File</Label>
+                    <Input 
+                      id="image" 
+                      type="file" 
+                      accept="image/*"
+                      onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
+                      required
+                    />
+                  </div>
+                  <DialogFooter>
+                    <Button type="submit" disabled={isUploading}>
+                      {isUploading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                      Upload
+                    </Button>
+                  </DialogFooter>
+                </form>
+              </DialogContent>
+            </Dialog>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {images.map((image) => (
           <Card key={image.id} className="overflow-hidden group relative">
             <div className="aspect-square relative">
-              {/* Note: In production we should use Next.js Image component, but valid domains need config. 
-                  We fetch from Google Drive links provided by backend. 
-                  If backend returns a webViewLink, user needs permission? 
-                  Likely backend returns a public link or proxy.
-                  Assuming 'url' is accessible. */}
               <img 
                 src={image.url} 
                 alt={image.name} 
