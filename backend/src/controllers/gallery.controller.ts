@@ -47,8 +47,15 @@ export const getGallery = async (req: Request, res: Response) => {
     try {
         const limit = parseInt(req.query.limit as string) || 10;
         const startAfterId = req.query.startAfter as string | undefined;
+        const category = req.query.category as string | undefined;
 
-        let query = db.collection("gallery").orderBy("uploadedAt", "desc").limit(limit);
+        let query = db.collection("gallery").orderBy("uploadedAt", "desc");
+
+        if (category && category !== "All") {
+            query = query.where("category", "==", category);
+        }
+
+        query = query.limit(limit);
 
         if (startAfterId) {
             const lastDoc = await db.collection("gallery").doc(startAfterId).get();
