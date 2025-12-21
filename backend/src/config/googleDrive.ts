@@ -33,6 +33,7 @@ export const uploadToDrive = async (file: Express.Multer.File) => {
     requestBody: fileMetadata,
     media,
     fields: "id, name, webViewLink, webContentLink",
+    supportsAllDrives: true,
   });
 
   if (!response.data || !response.data.id) throw new Error("Upload failed, no response data");
@@ -44,6 +45,7 @@ export const uploadToDrive = async (file: Express.Multer.File) => {
       role: "reader",
       type: "anyone",
     },
+    supportsAllDrives: true,
   });
 
   // Construct a direct link (using 'uc' endpoint for direct view)
@@ -65,6 +67,7 @@ export const deleteFromDrive = async (fileId: string) => {
   try {
     await driveService.files.delete({
       fileId,
+      supportsAllDrives: true,
     });
   } catch (error) {
     console.error("Failed to delete file from Drive:", error);
