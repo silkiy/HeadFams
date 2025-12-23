@@ -15,6 +15,7 @@ export function Navbar() {
   const routes = [
     { href: "/", label: "Home" },
     { href: "/gallery", label: "Gallery" },
+    { href: "/profile", label: "Profile" },
     { href: "/secret-login", label: "Secret Login" },
   ];
 
@@ -57,32 +58,32 @@ export function Navbar() {
               </Button>
             </SheetTrigger>
             <SheetContent side="right" className="w-[300px] p-0 pr-0">
-               <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
-               <div className="flex flex-col h-full bg-background">
-                  <div className="flex h-16 items-center px-6 border-b">
-                    <Link href="/" className="text-lg font-bold" onClick={() => setIsOpen(false)}>
-                      Janji<span className="text-primary">Pria</span>
-                    </Link>
-                  </div>
-                  <div className="flex flex-col gap-2 p-4 flex-1 overflow-y-auto">
-                    {routes.map((route) => (
-                      <Link key={route.href} href={route.href} onClick={() => setIsOpen(false)}>
-                        <Button
-                          variant={pathname === route.href ? "secondary" : "ghost"}
-                          className="w-full justify-start gap-3 text-base h-11"
-                        >
-                          {/* We don't have icons in the route config yet, can add if needed or just use text */}
-                          {route.label}
-                        </Button>
-                      </Link>
-                    ))}
-                  </div>
-                  <div className="p-4 border-t">
-                     <Button asChild variant="outline" className="w-full justify-start gap-2" onClick={() => setIsOpen(false)}>
-                        <Link href="/login">Admin Login</Link>
+              <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
+              <div className="flex flex-col h-full bg-background">
+                <div className="flex h-16 items-center px-6 border-b">
+                  <Link href="/" className="text-lg font-bold" onClick={() => setIsOpen(false)}>
+                    Janji<span className="text-primary">Pria</span>
+                  </Link>
+                </div>
+                <div className="flex flex-col gap-2 p-4 flex-1 overflow-y-auto">
+                  {routes.map((route) => (
+                    <Link key={route.href} href={route.href} onClick={() => setIsOpen(false)}>
+                      <Button
+                        variant={pathname === route.href ? "secondary" : "ghost"}
+                        className="w-full justify-start gap-3 text-base h-11"
+                      >
+                        {/* We don't have icons in the route config yet, can add if needed or just use text */}
+                        {route.label}
                       </Button>
-                  </div>
-               </div>
+                    </Link>
+                  ))}
+                </div>
+                <div className="p-4 border-t">
+                  <Button asChild variant="outline" className="w-full justify-start gap-2" onClick={() => setIsOpen(false)}>
+                    <Link href="/login">Admin Login</Link>
+                  </Button>
+                </div>
+              </div>
             </SheetContent>
           </Sheet>
         </div>

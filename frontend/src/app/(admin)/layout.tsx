@@ -5,13 +5,14 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { 
-  LayoutDashboard, 
-  HandHeart, 
-  Image as ImageIcon, 
+import {
+  LayoutDashboard,
+  HandHeart,
+  Image as ImageIcon,
   LogOut,
   Menu,
-  Settings
+  Settings,
+  User
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -44,6 +45,7 @@ export default function AdminLayout({
     { icon: LayoutDashboard, label: "Dashboard", href: "/admin/dashboard" },
     { icon: HandHeart, label: "Janji Pria", href: "/admin/janji-pria" },
     { icon: ImageIcon, label: "Gallery", href: "/admin/gallery" },
+    { icon: User, label: "Profile", href: "/admin/profile" },
     { icon: Settings, label: "Settings", href: "/admin/settings" },
   ];
 
@@ -89,40 +91,40 @@ export default function AdminLayout({
       <div className="md:hidden fixed top-0 left-0 z-30 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b px-4 h-16 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Sheet open={isMobileOpen} onOpenChange={setIsMobileOpen}>
-             <SheetTrigger asChild>
+            <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="mr-2">
                 <Menu className="h-6 w-6" />
                 <span className="sr-only">Toggle Sidebar</span>
               </Button>
             </SheetTrigger>
             <SheetContent side="left" className="w-[300px] p-0 pr-0">
-               {/* Pass a prop or just reuse the content component. adding specific mobile styling if needed */}
-               <div className="flex flex-col h-full bg-background">
-                  <div className="flex h-16 items-center px-6 border-b">
-                    <Link href="/" className="text-lg font-bold" onClick={() => setIsMobileOpen(false)}>
-                      Janji<span className="text-primary">Admin</span>
-                    </Link>
-                  </div>
-                  <div className="flex flex-col gap-2 p-4 flex-1 overflow-y-auto">
-                    {sidebarItems.map((item) => (
-                      <Link key={item.href} href={item.href} onClick={() => setIsMobileOpen(false)}>
-                        <Button
-                          variant={pathname.startsWith(item.href) ? "secondary" : "ghost"}
-                          className="w-full justify-start gap-3 text-base h-11"
-                        >
-                          <item.icon className="h-5 w-5" />
-                          {item.label}
-                        </Button>
-                      </Link>
-                    ))}
-                  </div>
-                  <div className="p-4 border-t">
-                     <Button variant="ghost" className="w-full justify-start gap-2 text-destructive hover:text-destructive hover:bg-destructive/10" onClick={logout}>
-                        <LogOut className="h-5 w-5" />
-                        Logout
+              {/* Pass a prop or just reuse the content component. adding specific mobile styling if needed */}
+              <div className="flex flex-col h-full bg-background">
+                <div className="flex h-16 items-center px-6 border-b">
+                  <Link href="/" className="text-lg font-bold" onClick={() => setIsMobileOpen(false)}>
+                    Janji<span className="text-primary">Admin</span>
+                  </Link>
+                </div>
+                <div className="flex flex-col gap-2 p-4 flex-1 overflow-y-auto">
+                  {sidebarItems.map((item) => (
+                    <Link key={item.href} href={item.href} onClick={() => setIsMobileOpen(false)}>
+                      <Button
+                        variant={pathname.startsWith(item.href) ? "secondary" : "ghost"}
+                        className="w-full justify-start gap-3 text-base h-11"
+                      >
+                        <item.icon className="h-5 w-5" />
+                        {item.label}
                       </Button>
-                  </div>
-               </div>
+                    </Link>
+                  ))}
+                </div>
+                <div className="p-4 border-t">
+                  <Button variant="ghost" className="w-full justify-start gap-2 text-destructive hover:text-destructive hover:bg-destructive/10" onClick={logout}>
+                    <LogOut className="h-5 w-5" />
+                    Logout
+                  </Button>
+                </div>
+              </div>
             </SheetContent>
           </Sheet>
           <Link href="/" className="font-bold text-lg flex items-center">
