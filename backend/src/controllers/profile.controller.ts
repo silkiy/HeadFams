@@ -27,7 +27,7 @@ export const getProfiles = async (req: Request, res: Response) => {
             };
         });
 
-        res.status(200).json({ success: true, data });
+        res.status(200).json({ success: true, data, totalCount: snapshot.size });
     } catch (error) {
         console.error("Get Profiles Error:", error);
         res.status(500).json({ error: "Gagal mengambil data profil" });
