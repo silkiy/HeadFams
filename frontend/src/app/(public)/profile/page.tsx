@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import api from "@/lib/api";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Instagram, Loader2, User } from "lucide-react";
@@ -10,6 +10,7 @@ import Link from "next/link";
 import { toast } from "sonner";
 
 interface ProfileData {
+    id: string;
     name: string;
     bio: string;
     instagram: string;
@@ -17,18 +18,18 @@ interface ProfileData {
 }
 
 export default function PublicProfilePage() {
-    const [data, setData] = useState<ProfileData | null>(null);
+    const [profiles, setProfiles] = useState<ProfileData[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const fetchProfile = async () => {
+        const fetchProfiles = async () => {
             try {
                 const response = await api.get("/profile");
                 if (response.data.success) {
-                    setData(response.data.data);
+                    setProfiles(response.data.data);
                 }
             } catch (error) {
-                console.error("Failed to fetch profile", error);
+                console.error("Failed to fetch profiles", error);
                 toast.error("Error", {
                     description: "Failed to load profile data.",
                 });
@@ -36,7 +37,7 @@ export default function PublicProfilePage() {
                 setLoading(false);
             }
         };
-        fetchProfile();
+        fetchProfiles();
     }, []);
 
     if (loading) {
@@ -47,64 +48,53 @@ export default function PublicProfilePage() {
         );
     }
 
-    if (!data || (!data.name && !data.bio)) {
-        return (
-            <div className="min-h-screen flex items-center justify-center pt-16">
-                <div className="text-center space-y-4">
-                    <h2 className="text-xl font-semibold">Profile Not Set Up</h2>
-                    <p className="text-muted-foreground">The profile information has not been added yet.</p>
-                </div>
-            </div>
-        );
-    }
-
     return (
         <div className="min-h-screen pt-24 pb-12 px-4 bg-muted/30">
-            <div className="container mx-auto max-w-2xl">
-                <Card className="overflow-hidden border-none shadow-lg">
-                    <div className="h-32 md:h-48 bg-gradient-to-r from-primary/10 via-primary/5 to-background"></div>
-                    <CardContent className="relative px-6 pb-8">
-                        <div className="absolute -top-16 md:-top-24 left-6 border-4 border-background rounded-full overflow-hidden shadow-md">
-                            <Avatar className="h-32 w-32 md:h-48 md:w-48">
-                                <AvatarImage src={data.photoUrl} alt={data.name} className="object-cover" />
-                                <AvatarFallback className="text-4xl bg-muted"><User className="h-16 w-16 md:h-24 md:w-24 text-muted-foreground" /></AvatarFallback>
-                            </Avatar>
-                        </div>
+            <div className="container mx-auto">
+                <div className="text-center mb-12 space-y-4">
+                    <h1 className="text-4xl font-bold tracking-tight">Meet The Team</h1>
+                    <p className="text-muted-foreground max-w-2xl mx-auto">
+                        The people behind the promises. Get to know our dedicated members.
+                    </p>
+                </div>
 
-                        <div className="pt-20 md:pt-28 space-y-4">
-                            <div>
-                                <h1 className="text-3xl font-bold tracking-tight text-foreground">{data.name}</h1>
-                                {data.instagram && (
-                                    <Link
-                                        href={`https://instagram.com/${data.instagram.replace('@', '')}`}
-                                        target="_blank"
-                                        className="inline-flex items-center text-muted-foreground hover:text-primary transition-colors mt-1"
-                                    >
-                                        <Instagram className="h-4 w-4 mr-1" />
-                                        <span>@{data.instagram.replace('@', '')}</span>
-                                    </Link>
-                                )}
-                            </div>
-
-                            {data.bio && (
-                                <div className="prose prose-sm md:prose-base dark:prose-invert max-w-none text-muted-foreground whitespace-pre-line leading-relaxed">
-                                    {data.bio}
+                {profiles.length > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                        {profiles.map((profile) => (
+                            <Card key={profile.id} className="overflow-hidden border-none shadow-md hover:shadow-xl transition-all duration-300 group">
+                                <div className="aspect-[4/5] relative overflow-hidden bg-muted">
+                                    <img
+                                        src={profile.photoUrl}
+                                        alt={profile.name}
+                                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                                    />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
+                                        <h3 className="text-white text-xl font-bold mb-1 translate-y-0 duration-300 text-shadow-sm shadow-black">{profile.name}</h3>
+                                        {profile.instagram && (
+                                            <Link
+                                                href={`https://instagram.com/${profile.instagram.replace('@', '')}`}
+                                                target="_blank"
+                                                className="text-white/80 text-sm hover:text-white flex items-center gap-1 mb-2"
+                                            >
+                                                <Instagram className="h-3 w-3" />
+                                                @{profile.instagram.replace('@', '')}
+                                            </Link>
+                                        )}
+                                        <p className="text-white/70 text-sm line-clamp-3">
+                                            {profile.bio}
+                                        </p>
+                                    </div>
                                 </div>
-                            )}
-
-                            {data.instagram && (
-                                <div className="pt-4">
-                                    <Button asChild variant="outline" className="gap-2 rounded-full">
-                                        <Link href={`https://instagram.com/${data.instagram.replace('@', '')}`} target="_blank">
-                                            <Instagram className="h-4 w-4" />
-                                            Follow on Instagram
-                                        </Link>
-                                    </Button>
-                                </div>
-                            )}
-                        </div>
-                    </CardContent>
-                </Card>
+                            </Card>
+                        ))}
+                    </div>
+                ) : (
+                    <div className="text-center py-20 bg-card rounded-lg border border-dashed">
+                        <User className="h-12 w-12 mx-auto text-muted-foreground mb-4 opacity-20" />
+                        <h3 className="text-lg font-medium text-muted-foreground">No profiles yet</h3>
+                        <p className="text-sm text-muted-foreground/60">Check back later to see our team.</p>
+                    </div>
+                )}
             </div>
         </div>
     );
