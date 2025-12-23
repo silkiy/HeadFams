@@ -61,8 +61,8 @@ export default function PublicProfilePage() {
                 {profiles.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                         {profiles.map((profile) => (
-                            <Card key={profile.id} className="overflow-hidden border-none shadow-md hover:shadow-xl transition-all duration-300 group">
-                                <div className="aspect-[4/5] relative overflow-hidden bg-muted">
+                            <Card key={profile.id} className="overflow-hidden border-none shadow-none bg-transparent group">
+                                <div className="aspect-[4/5] relative overflow-hidden bg-muted rounded-lg">
                                     <img
                                         src={profile.photoUrl}
                                         alt={profile.name}

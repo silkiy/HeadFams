@@ -9,12 +9,14 @@ import Link from "next/link";
 interface DashboardStats {
   totalJanji: number;
   totalGallery: number;
+  totalProfile: number;
 }
 
 export default function DashboardPage() {
   const [stats, setStats] = useState<DashboardStats>({
     totalJanji: 0,
     totalGallery: 0,
+    totalProfile: 0,
   });
 
   useEffect(() => {
@@ -25,10 +27,12 @@ export default function DashboardPage() {
       try {
         const janjiRes = await api.get("/janji-pria"); // Just getting approved count for now
         const galleryRes = await api.get("/gallery");
+        const profileRes = await api.get("/profile");
 
         setStats({
           totalJanji: janjiRes.data.total || 0,
           totalGallery: galleryRes.data.totalCount || 0,
+          totalProfile: profileRes.data.totalCount || 0,
         });
       } catch (error) {
         console.error("Failed to fetch dashboard stats", error);
@@ -65,6 +69,20 @@ export default function DashboardPage() {
             <div className="text-2xl font-bold">{stats.totalGallery}</div>
             <p className="text-xs text-muted-foreground">
               Uploaded photos
+            </p>
+          </CardContent>
+        </Card>
+        </Link>
+        <Link href="/admin/profile">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Profile</CardTitle>
+            <Users className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{stats.totalProfile}</div>
+            <p className="text-xs text-muted-foreground">
+              Total profiles
             </p>
           </CardContent>
         </Card>

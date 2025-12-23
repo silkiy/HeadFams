@@ -188,7 +188,7 @@ export default function ProfilePage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {profiles.map((profile) => (
-                    <Card key={profile.id} className="overflow-hidden group">
+                    <Card key={profile.id} className="overflow-hidden group bg-transparent border-none shadow-none">
                         <div className="aspect-square relative overflow-hidden bg-muted">
                             <img
                                 src={profile.photoUrl}
