@@ -5,12 +5,26 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 
 export function Navbar() {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 0);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const isHome = pathname === "/";
+  // specific logic: transparent only if on home AND not scrolled.
+  // if not home, always "scrolled" style (solid bg).
+  const isTransparent = isHome && !isScrolled;
 
   const routes = [
     { href: "/", label: "Home" },
@@ -20,11 +34,19 @@ export function Navbar() {
   ];
 
   return (
-    <nav className="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-md border-b">
+    <nav className={cn(
+      "fixed top-0 w-full z-50 transition-all duration-300 border-b",
+      isTransparent
+        ? "bg-transparent border-transparent"
+        : "bg-background/80 backdrop-blur-md shadow-sm border-border"
+    )}>
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         {/* Logo */}
-        <Link href="/" className="text-xl font-bold tracking-tight">
-          Janji<span className="text-primary">Pria</span>
+        <Link href="/" className={cn(
+          "text-xl font-bold tracking-tight transition-colors",
+          isTransparent ? "text-white" : "text-foreground"
+        )}>
+          Janji<span className={cn("text-primary", isTransparent && "text-white")}>Pria</span>
         </Link>
 
         {/* Desktop Navigation */}
@@ -37,13 +59,13 @@ export function Navbar() {
                 "text-sm font-medium transition-colors hover:text-primary",
                 pathname === route.href
                   ? "text-primary"
-                  : "text-muted-foreground"
+                  : (isTransparent ? "text-white/80 hover:text-white" : "text-muted-foreground")
               )}
             >
               {route.label}
             </Link>
           ))}
-          <Button asChild variant="outline" size="sm">
+          <Button asChild variant={isTransparent ? "secondary" : "outline"} size="sm" className={cn(isTransparent && "bg-white/10 text-white hover:bg-white/20 border-white/20")}>
             <Link href="/login">Admin Login</Link>
           </Button>
         </div>
@@ -52,7 +74,7 @@ export function Navbar() {
         <div className="md:hidden">
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon">
+              <Button variant="ghost" size="icon" className={cn(isTransparent ? "text-white hover:bg-white/10" : "")}>
                 <Menu className="h-6 w-6" />
                 <span className="sr-only">Toggle menu</span>
               </Button>

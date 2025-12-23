@@ -21,10 +21,10 @@ export default function GalleryPage() {
   const fetchImages = async (category?: string) => {
     setLoading(true);
     try {
-      const url = category && category !== "All" 
+      const url = category && category !== "All"
         ? `/gallery?limit=100&category=${encodeURIComponent(category)}`
         : "/gallery?limit=100";
-      
+
       const response = await api.get(url);
       if (response.data.success) {
         setImages(response.data.data);
@@ -63,20 +63,19 @@ export default function GalleryPage() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 pt-24 pb-8">
       <h1 className="text-4xl font-bold mb-8 text-center">Gallery</h1>
-      
+
       {/* Category Filter */}
       <div className="flex flex-wrap justify-center gap-2 mb-8">
         {categories.map((cat) => (
           <button
             key={cat}
             onClick={() => handleCategoryChange(cat)}
-            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-              selectedCategory === cat
+            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${selectedCategory === cat
                 ? "bg-primary text-primary-foreground"
                 : "bg-muted hover:bg-muted/80 text-muted-foreground"
-            }`}
+              }`}
           >
             {cat}
           </button>
@@ -84,7 +83,7 @@ export default function GalleryPage() {
       </div>
 
       {loading ? (
-         <div className="flex justify-center p-20"><Loader2 className="animate-spin h-8 w-8" /></div>
+        <div className="flex justify-center p-20"><Loader2 className="animate-spin h-8 w-8" /></div>
       ) : images.length === 0 ? (
         <div className="text-center text-muted-foreground py-20">
           No images found.
@@ -94,13 +93,13 @@ export default function GalleryPage() {
           {images.map((image) => (
             <Card key={image.id} className="overflow-hidden group h-full">
               <div className="group relative aspect-video overflow-hidden rounded-md">
-                  <img 
-                  src={image.url} 
-                  alt={image.name} 
+                <img
+                  src={image.url}
+                  alt={image.name}
                   className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
                   loading="lazy"
                   referrerPolicy="no-referrer"
-                  />
+                />
               </div>
               <CardContent className="p-3">
                 <p className="text-sm font-medium text-muted-foreground truncate">{image.category}</p>
