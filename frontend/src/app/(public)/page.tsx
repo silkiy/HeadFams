@@ -22,14 +22,7 @@ interface GalleryImage {
 export default function Home() {
   const [janjiList, setJanjiList] = useState<JanjiPria[]>([]);
   const [galleryList, setGalleryList] = useState<GalleryImage[]>([]);
-  const [activeIndex, setActiveIndex] = useState(0);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setActiveIndex((current) => (current + 1) % 4);
-    }, 5000);
-    return () => clearInterval(interval);
-  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -59,19 +52,12 @@ export default function Home() {
         {/* Carousel Background */}
         <div className="absolute inset-0 w-full h-full">
           <div className="absolute inset-0">
-            {["/hero-1.jpg", "/hero-2.jpg", "/hero-3.jpg", "/hero-4.jpg"].map((src, index) => (
-              <img
-                key={src}
-                src={src}
-                alt={`Hero Slide ${index + 1}`}
-                className={`absolute inset-0 w-full h-full object-cover object-center transition-opacity duration-1000 ${index === activeIndex ? "opacity-100" : "opacity-0"
-                  }`}
-                style={{
-                  zIndex: index === activeIndex ? 1 : 0
-                }}
-                id={`hero-slide-${index}`}
-              />
-            ))}
+            <img
+              src="/hero-3.jpg"
+              alt="Hero Background"
+              className="absolute inset-0 w-full h-full object-cover object-center"
+              style={{ zIndex: 0 }}
+            />
             <div className="absolute inset-0 bg-black/60 z-10"></div>
           </div>
 
