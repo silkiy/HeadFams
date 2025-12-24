@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
+import { ModeToggle } from "@/components/mode-toggle";
 
 export function Navbar() {
   const pathname = usePathname();
@@ -68,6 +69,7 @@ export function Navbar() {
           <Button asChild variant={isTransparent ? "secondary" : "outline"} size="sm" className={cn(isTransparent && "bg-white/10 text-white hover:bg-white/20 border-white/20")}>
             <Link href="/login">Admin Login</Link>
           </Button>
+          <ModeToggle />
         </div>
 
         {/* Mobile Navigation */}
@@ -104,6 +106,9 @@ export function Navbar() {
                   <Button asChild variant="outline" className="w-full justify-start gap-2" onClick={() => setIsOpen(false)}>
                     <Link href="/login">Admin Login</Link>
                   </Button>
+                  <div className="mt-4 flex justify-start">
+                    <ModeToggle />
+                  </div>
                 </div>
               </div>
             </SheetContent>
