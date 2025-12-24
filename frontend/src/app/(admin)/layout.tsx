@@ -18,6 +18,7 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { ModeToggle } from "@/components/mode-toggle";
 
 export default function AdminLayout({
   children,
@@ -70,7 +71,11 @@ export default function AdminLayout({
             </Button>
           </Link>
         ))}
-        <div className="mt-auto pt-4 border-t">
+        <div className="mt-auto pt-4 border-t flex flex-col gap-2">
+          <div className="flex items-center justify-between px-2">
+            <span className="text-sm font-medium">Theme</span>
+            <ModeToggle />
+          </div>
           <Button variant="ghost" className="w-full justify-start gap-2 text-destructive hover:text-destructive" onClick={logout}>
             <LogOut className="h-4 w-4" />
             Logout
@@ -132,6 +137,7 @@ export default function AdminLayout({
           </Link>
         </div>
         {/* You could add a user avatar here if desired */}
+        <ModeToggle />
       </div>
 
       {/* Main Content */}
